@@ -32,7 +32,6 @@ def get_file_stream(bucket, s3_client, file_key):
 def process_file(file_stream, cursor):
     for line in file_stream:
         line = line.decode("utf-8")
-        print(f"linha: {line}")
         cliente_id, produto_id = line.strip().split(",")
         for table in TABLES:
           cursor.execute(f"UPDATE {table} SET product_id = %s WHERE client_id = %s;", (produto_id, cliente_id))
@@ -41,9 +40,6 @@ def lambda_handler(event, context):
     try:
         bucket = event['Records'][0]['s3']['bucket']['name']
         key = event['Records'][0]['s3']['object']['key']
-        print(event)
-        print(bucket)
-        print(key)
 
         s3_client = boto3.client("s3")
         file_stream = get_file_stream(bucket, s3_client,key)
